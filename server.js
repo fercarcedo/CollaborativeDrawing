@@ -10,9 +10,17 @@ var WebSocketServer = require("ws").Server;
 wss = new WebSocketServer({ port: 9001 });
 
 wss.on('connection', function connection(ws) {
+    broadcast(wss.clients.size);
     ws.on('message', function incoming(message) {
-        wss.clients.forEach(function each(client) {
-            client.send(message);
-        });
+        broadcast(message);
+    });
+    ws.on('close', function closed (id) {
+        broadcast(wss.clients.size);
     });
 });
+
+function broadcast(message) {
+    wss.clients.forEach(function each(client) {
+        client.send(message);
+    });
+}

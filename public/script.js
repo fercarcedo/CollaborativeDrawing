@@ -78,8 +78,11 @@ function onMessageFromServer(message) {
     console.log('received ' + message);
     if (isJson(message.data)) {
         var obj = JSON.parse(message.data);
-        console.log("got data from server");
-        addObject(obj.type, obj.data);
+        if (typeof obj == 'number') {
+            clientCounter.innerHTML = obj;
+        } else {
+            addObject(obj.type, obj.data);
+        }
     }
 }
 

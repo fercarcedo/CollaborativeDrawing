@@ -10,6 +10,9 @@ function init() {
     addRectangle.addEventListener('click', addRectangleHandler);
     addTriangle.addEventListener('click', addTriangleHandler);
     pencil.addEventListener('click', pencilHandler);
+    canvas.on({
+        'path:created': pathCreatedHandler
+    });
 }
 
 function isJson(str) {
@@ -57,6 +60,10 @@ function pencilHandler() {
     canvas.isDrawingMode = true;
 }
 
+function pathCreatedHandler(event) {
+    sendObject('Path', event.path);
+}
+
 function initServer() {
     websocket = new WebSocket('ws://localhost:9001');
     websocket.onopen = connectionOpen;
@@ -84,6 +91,8 @@ function addObject(type, obj) {
         shape = new fabric.Rect(obj);
     } else if (type == 'Circle') {
         shape = new fabric.Circle(obj);
+    } else if (type == 'Path') {
+        shape = new fabric.Path(obj.path, obj);
     }
     canvas.add(shape);
 }

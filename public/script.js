@@ -2,7 +2,8 @@ window.addEventListener('load', init);
 
 function init() {
     initServer();
-    canvas = new fabric.Canvas('canvas', { selection: true });
+    const parent = document.getElementById('card');
+    canvas = new fabric.Canvas('canvas', { selection: true, width: parent.offsetWidth, height: parent.offsetHeight });
     canvas.freeDrawingBrush.color = 'green';
     canvas.freeDrawingBrush.lineWidth = 10;
 
@@ -15,6 +16,12 @@ function init() {
         'path:created': pathCreatedHandler,
         'object:modified': objectModifiedHandler
     });
+    window.onresize = function (e) {
+        const parent = document.getElementById('card');
+        canvas.setWidth(parent.offsetWidth);
+        canvas.setHeight(parent.offsetHeight);
+        canvas.calcOffset();
+    };
 }
 
 function isJson(str) {
@@ -46,7 +53,7 @@ function addRectangleHandler() {
         height: 70,
         fill: 'red'
     };
-    sendObject('rectangle', rectangle);
+    sendObject('rect', rectangle);
 }
 
 function addTriangleHandler() {
@@ -127,13 +134,14 @@ function addObject(type, obj) {
         var shape;
         if (type == 'triangle') {
             shape = new fabric.Triangle(obj);
-        } else if (type == 'rectangle') {
+        } else if (type == 'rect') {
             shape = new fabric.Rect(obj);
         } else if (type == 'circle') {
             shape = new fabric.Circle(obj);
         } else if (type == 'path') {
             shape = new fabric.Path(obj.path, obj);
         }
+        console.log(type);
         shape.set('id', obj.id);
         canvas.add(shape);
     }

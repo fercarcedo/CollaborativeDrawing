@@ -8,12 +8,23 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <button id="addCircle">Círculo</button>
-        <button id="addRectangle">Rectángulo</button>
-        <button id="addTriangle">Triángulo</button>
-        <button id="pencil">Lápiz</button>
-        <button id="select">Seleccionar</button>
-        <canvas id="canvas" width="1024" height="768"></canvas>
-        <p id="clientCounter"></p>
+        <header>
+            <h1>Dibujo colaborativo</h1>
+        </header>
+        <section>
+            <div id="card">
+                <canvas id="canvas"></canvas>
+            </div>
+            <div id="controls">
+                <button id="addCircle">Círculo</button>
+                <button id="addRectangle">Rectángulo</button>
+                <button id="addTriangle">Triángulo</button>
+                <button id="pencil">Lápiz</button>
+                <button id="select">Seleccionar</button>
+            </div>
+        </section>
+        <footer>
+            <p id="connectedUsersText">Usuarios conectados:&nbsp;</p><p id="clientCounter"></p>
+        </footer>
     </body>
 </html>

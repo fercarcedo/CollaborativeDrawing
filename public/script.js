@@ -108,7 +108,6 @@ function connectionOpen() {
 }
 
 function onMessageFromServer(message) {
-    console.log('received ' + message);
     if (isJson(message.data)) {
         var obj = JSON.parse(message.data);
         if (typeof obj == 'number') {
@@ -119,7 +118,7 @@ function onMessageFromServer(message) {
             if (obj.modified) {
                 data = { id: obj.data.id, ...obj.data.target };
                 type = obj.data.target.type;
-                canvas.remove(canvas._objects[obj.data.id]);
+                canvas._objects.filter(o => o.id == obj.data.id).forEach(e => canvas.remove(e));
             } else {
                 data = obj.data;
                 type = obj.type;
@@ -141,7 +140,6 @@ function addObject(type, obj) {
         } else if (type == 'path') {
             shape = new fabric.Path(obj.path, obj);
         }
-        console.log(type);
         shape.set('id', obj.id);
         canvas.add(shape);
     }

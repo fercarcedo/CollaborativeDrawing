@@ -95,7 +95,13 @@ function pathCreatedHandler(event) {
 }
 
 function generateId() {
-    return canvas._objects.length;
+    let maxId = -1;
+    for (let obj of canvas._objects) {
+        if (obj.id > maxId) {
+            maxId = obj.id;
+        }
+    }
+    return maxId + 1;
 }
 
 function objectModifiedHandler(event) {

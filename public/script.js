@@ -121,6 +121,10 @@ function onMessageFromServer(message) {
         var obj = JSON.parse(message.data);
         if (typeof obj == 'number') {
             clientCounter.innerHTML = obj;
+        } else if (obj.isCanvas) {
+            for (let shape of obj.objects) {
+                addObject(shape.type, shape);
+            }
         } else {
             var data;
             var type;
@@ -133,6 +137,7 @@ function onMessageFromServer(message) {
                 type = obj.type;
             }
             addObject(type, data);
+            sendCanvasToServer();
         }
     }
 }
@@ -146,7 +151,7 @@ function addObject(type, obj) {
             shape = new fabric.Rect(obj);
         } else if (type == 'circle') {
             shape = new fabric.Circle(obj);
-        } else if (type == 'path') {
+        } else {
             shape = new fabric.Path(obj.path, obj);
         }
         shape.set('id', obj.id);
@@ -156,6 +161,21 @@ function addObject(type, obj) {
 
 function sendObject(type, obj) {
     websocket.send(JSON.stringify({ 'type': type, 'data': obj }));
+}
+
+function sendCanvasToServer() {
+    websocket.send(JSON.stringify({ isCanvas: true, objects: getCanvasObjects() }));
+}
+
+function getCanvasObjects() {
+    let result = [];
+    for (let obj of canvas._objects) {
+        result.push({
+            id: obj.get('id'),
+            ...obj
+        });
+    }
+    return result;
 }
 
 function getCanvasJSON() {

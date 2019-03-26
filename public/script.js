@@ -12,6 +12,7 @@ function init() {
     addTriangle.addEventListener('click', addTriangleHandler);
     pencil.addEventListener('click', pencilHandler);
     select.addEventListener('click', selectHandler);
+    downloadJSON.addEventListener('click', downloadJSONHandler);
     canvas.on({
         'path:created': pathCreatedHandler,
         'object:modified': objectModifiedHandler
@@ -74,6 +75,14 @@ function pencilHandler() {
 
 function selectHandler() {
     canvas.isDrawingMode = false;
+}
+
+function downloadJSONHandler() {
+    const json = getCanvasJSON();
+    const linkEl = document.createElement('a');
+    linkEl.setAttribute('href', "data:text/json;charset=utf-8," + encodeURIComponent(json));
+    linkEl.setAttribute('download', 'canvas.json');
+    linkEl.click();
 }
 
 function pathCreatedHandler(event) {
@@ -147,4 +156,8 @@ function addObject(type, obj) {
 
 function sendObject(type, obj) {
     websocket.send(JSON.stringify({ 'type': type, 'data': obj }));
+}
+
+function getCanvasJSON() {
+    return JSON.stringify(canvas._objects);
 }

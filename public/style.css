@@ -32,7 +32,7 @@ h1 {
     flex-direction: row;
 }
 
-#addCircle, #addRectangle, #addTriangle, #pencil, #select {
+#addCircle, #addRectangle, #addTriangle, #pencil, #select, #downloadJSON {
     flex: 1;
     background-color: darkgrey;
 }

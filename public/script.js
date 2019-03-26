@@ -2,7 +2,7 @@ window.addEventListener('load', init);
 
 function init() {
     initServer();
-    canvas = new fabric.Canvas('canvas');
+    canvas = new fabric.Canvas('canvas', { selection: true });
     canvas.freeDrawingBrush.color = 'green';
     canvas.freeDrawingBrush.lineWidth = 10;
 
@@ -10,8 +10,10 @@ function init() {
     addRectangle.addEventListener('click', addRectangleHandler);
     addTriangle.addEventListener('click', addTriangleHandler);
     pencil.addEventListener('click', pencilHandler);
+    select.addEventListener('click', selectHandler);
     canvas.on({
-        'path:created': pathCreatedHandler
+        'path:created': pathCreatedHandler,
+        'object:modified': objectModifiedHandler
     });
 }
 
@@ -26,42 +28,66 @@ function isJson(str) {
 
 function addCircleHandler() {
     var circle = {
+        id: generateId(),
         radius: 20,
         fill: 'green',
         left: 100,
         top: 100
     };
-    sendObject('Circle', circle);
+    sendObject('circle', circle);
 }
 
 function addRectangleHandler() {
     var rectangle = {
+        id: generateId(),
         top: 100,
         left: 100,
         width: 60,
         height: 70,
         fill: 'red'
     };
-    sendObject('Rectangle', rectangle);
+    sendObject('rectangle', rectangle);
 }
 
 function addTriangleHandler() {
     var triangle = {
+        id: generateId(),
         width: 20,
         height: 30,
         fill: 'blue',
         left: 50,
         top: 50
     };
-    sendObject('Triangle', triangle);
+    sendObject('triangle', triangle);
 }
 
 function pencilHandler() {
     canvas.isDrawingMode = true;
 }
 
+function selectHandler() {
+    canvas.isDrawingMode = false;
+}
+
 function pathCreatedHandler(event) {
-    sendObject('Path', event.path);
+    const id = generateId();
+    event.path.set('id', id);
+    sendObject('path', {
+        id: id,
+        ...event.path
+    });
+}
+
+function generateId() {
+    return canvas._objects.length;
+}
+
+function objectModifiedHandler(event) {
+    const obj = {
+        id: canvas.getActiveObject().get('id'),
+        ...event
+    };
+    websocket.send(JSON.stringify({ 'modified': true, type: event.type, data: obj }));
 }
 
 function initServer() {
@@ -81,23 +107,36 @@ function onMessageFromServer(message) {
         if (typeof obj == 'number') {
             clientCounter.innerHTML = obj;
         } else {
-            addObject(obj.type, obj.data);
+            var data;
+            var type;
+            if (obj.modified) {
+                data = { id: obj.data.id, ...obj.data.target };
+                type = obj.data.target.type;
+                canvas.remove(canvas._objects[obj.data.id]);
+            } else {
+                data = obj.data;
+                type = obj.type;
+            }
+            addObject(type, data);
         }
     }
 }
 
 function addObject(type, obj) {
-    var shape;
-    if (type == 'Triangle') {
-        shape = new fabric.Triangle(obj);
-    } else if (type == 'Rectangle') {
-        shape = new fabric.Rect(obj);
-    } else if (type == 'Circle') {
-        shape = new fabric.Circle(obj);
-    } else if (type == 'Path') {
-        shape = new fabric.Path(obj.path, obj);
+    if (!canvas._objects.some(o => o.get('id') == obj.id)) {
+        var shape;
+        if (type == 'triangle') {
+            shape = new fabric.Triangle(obj);
+        } else if (type == 'rectangle') {
+            shape = new fabric.Rect(obj);
+        } else if (type == 'circle') {
+            shape = new fabric.Circle(obj);
+        } else if (type == 'path') {
+            shape = new fabric.Path(obj.path, obj);
+        }
+        shape.set('id', obj.id);
+        canvas.add(shape);
     }
-    canvas.add(shape);
 }
 
 function sendObject(type, obj) {

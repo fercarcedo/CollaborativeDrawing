@@ -16,7 +16,7 @@ h1, h2 {
     text-align: center;
 }
 
-h1, h2, p, button {
+h1, h2, p, button, a {
     color: white;
 }
 
@@ -69,12 +69,22 @@ label {
     display: inline-block;
 }
 
-form {
-    background-color: white;
+.form-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
+}
+
+.form-container > a {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 10px;
+}
+
+form {
+    background-color: white;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;

@@ -13,7 +13,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use('/index.html', requireLogin);
+app.use('/protected/*', requireLogin);
 app.use(express.static(__dirname + '/public'));
 
 mongoose.connect('mongodb://miwDCMW:' + encodeURIComponent('.xq$ACDFEK.2AuQ7BGtyhg8PO') + '@ds147225.mlab.com:47225/collaborativedrawing')
@@ -61,7 +61,7 @@ function requireLogin(req, res, next) {
     if (req.session.loggedIn) {
         next();
     } else {
-        res.redirect('/login');
+        res.redirect('/login.html');
     }
 }
 
@@ -95,7 +95,7 @@ app.post('/login', function (req, res) {
         
         User.authenticate(req.body.username, req.body.password, function (err, user) {
             if (err || !user) {
-                return res.redirect('/login');
+                return res.redirect('/login.html');
             } else {
                 req.session.loggedIn = true;
                 return res.redirect('/');
@@ -115,10 +115,6 @@ app.get('/logout', function (req, res, next) {
     }
 });
 
-app.get('/login', function (req, res) {
-    res.sendFile(__dirname + '/public/login.html');
-});
-
-app.get('/signup', function (req, res) {
-    res.sendFile(__dirname + '/public/signup.html');
+app.get('/', requireLogin, function (req, res) {
+    res.sendFile(__dirname + '/public/protected/index.html');
 });

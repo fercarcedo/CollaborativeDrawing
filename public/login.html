@@ -8,20 +8,23 @@
     <body>
         <header>
             <h1>Dibujo colaborativo</h1>
+            <h2>Iniciar sesión</h2>
         </header>
         <section>
-            <h2>Iniciar sesión</h2>
-            <form action="/login" method="POST">
-                <div class="form-line">
-                    <label for="username">Usuario:</label>
-                    <input type="text" id="username" name="username">
-                </div>
-                <div class="form-line">
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password">
-                </div>
-                <input type="submit" value="Enviar"> 
-            </form>
+            <div class="form-container">
+                <form action="/login" method="POST">
+                    <div class="form-line">
+                        <label for="username">Usuario:</label>
+                        <input type="text" id="username" name="username">
+                    </div>
+                    <div class="form-line">
+                        <label for="password">Contraseña:</label>
+                        <input type="password" id="password" name="password">
+                    </div>
+                    <input type="submit" value="Enviar"> 
+                </form>
+                <a href="/signup.html">¿No tienes cuenta? ¡Regístrate!</a>
+            </div>
         </section>
     </body>
 </html>

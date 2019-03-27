@@ -1,8 +1,24 @@
 var express = require('express');
 var app = express();
 var httpServer = require('http').Server(app);
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var mongoose = require('mongoose');
+var User = require('./models/user');
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+    secret: 'my-secret',
+    resave: true,
+    saveUninitialized: false
+}));
+
+app.use('/index.html', requireLogin);
 app.use(express.static(__dirname + '/public'));
+
+mongoose.connect('my-mongo-uri')
+    .then(res => console.log('Connected to DB'))
+    .catch(console.log);
 
 httpServer.listen(7878);
 
@@ -40,3 +56,69 @@ function isCanvasMessage(message) {
         return false;
     }
 }
+
+function requireLogin(req, res, next) {
+    if (req.session.loggedIn) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+app.post('/signup', function (req, res) {
+    if (req.body.email && 
+        req.body.username &&
+        req.body.password &&
+        req.body.passwordConfirmation) {
+
+        const userData = {
+            email: req.body.email,
+            username: req.body.username,
+            password: req.body.password,
+            passwordConfirmation: req.body.passwordConfirmation
+        };
+        
+        User.create(userData, function (err, user) {
+            if (err) {
+                return next(err);
+            } else {
+                req.session.loggedIn = true;
+                return res.redirect('/');
+            }
+        });
+    }
+});
+
+app.post('/login', function (req, res) {
+    if (req.body.username && 
+        req.body.password) {
+        
+        User.authenticate(req.body.username, req.body.password, function (err, user) {
+            if (err || !user) {
+                return res.redirect('/login');
+            } else {
+                req.session.loggedIn = true;
+                return res.redirect('/');
+            }
+        });
+    }
+});
+
+app.get('/logout', function (req, res, next) {
+    if (req.session) {
+        req.session.destroy(function (err) {
+            if (err) {
+                return next(err);
+            }
+            return res.redirect('/');
+        });
+    }
+});
+
+app.get('/login', function (req, res) {
+    res.sendFile(__dirname + '/public/login.html');
+});
+
+app.get('/signup', function (req, res) {
+    res.sendFile(__dirname + '/public/signup.html');
+});

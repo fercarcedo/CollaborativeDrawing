@@ -6,6 +6,7 @@ function init() {
     canvas = new fabric.Canvas('canvas', { selection: true, width: parent.offsetWidth, height: parent.offsetWidth / 1.33 });
     canvas.freeDrawingBrush.color = 'green';
     canvas.freeDrawingBrush.lineWidth = 10;
+    setCanvasZoom();
 
     addCircle.addEventListener('click', addCircleHandler);
     addRectangle.addEventListener('click', addRectangleHandler);
@@ -22,7 +23,12 @@ function init() {
         canvas.setWidth(parent.offsetWidth);
         canvas.setHeight(parent.offsetWidth / 1.33);
         canvas.calcOffset();
+        setCanvasZoom();
     };
+}
+
+function setCanvasZoom() {
+    canvas.setZoom(Math.min(canvas.width / 1024, canvas.height / 768));
 }
 
 function isJson(str) {

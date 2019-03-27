@@ -16,7 +16,7 @@ app.use(session({
 app.use('/index.html', requireLogin);
 app.use(express.static(__dirname + '/public'));
 
-mongoose.connect('my-mongo-uri')
+mongoose.connect('mongodb://miwDCMW:' + encodeURIComponent('.xq$ACDFEK.2AuQ7BGtyhg8PO') + '@ds147225.mlab.com:47225/collaborativedrawing')
     .then(res => console.log('Connected to DB'))
     .catch(console.log);
 

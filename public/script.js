@@ -3,7 +3,7 @@ window.addEventListener('load', init);
 function init() {
     initServer();
     const parent = document.getElementById('card');
-    canvas = new fabric.Canvas('canvas', { selection: true, width: parent.offsetWidth, height: parent.offsetHeight });
+    canvas = new fabric.Canvas('canvas', { selection: true, width: parent.offsetWidth, height: parent.offsetWidth / 1.33 });
     canvas.freeDrawingBrush.color = 'green';
     canvas.freeDrawingBrush.lineWidth = 10;
 
@@ -20,7 +20,7 @@ function init() {
     window.onresize = function (e) {
         const parent = document.getElementById('card');
         canvas.setWidth(parent.offsetWidth);
-        canvas.setHeight(parent.offsetHeight);
+        canvas.setHeight(parent.offsetWidth / 1.33);
         canvas.calcOffset();
     };
 }
